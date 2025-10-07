@@ -1,16 +1,12 @@
 {
-  "name": "assignment-book-fullstack",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "cd server && node server.js",
-    "dev": "concurrently \"cd server && npm run dev\" \"cd portfolio && npm run dev\"",
-    "build": "cd portfolio && npm run build",
-    "install-server": "cd server && npm install",
-    "install-client": "cd portfolio && npm install",
-    "install-all": "npm run install-server && npm run install-client",
-    "render-build": "npm run install-all && npm run build"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  }
+    "name": "assignment-book-fullstack",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "cd server && node server.js",
+        "build": "cd portfolio && npm install && npm run build",
+        "install-all": "cd server && npm install && cd ../portfolio && npm install"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    }
 }

@@ -20,17 +20,11 @@ app.use('/api/v1/books', bookRoutes);
 
 Database.dbConnection();
 
-
-
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(express.static(path.join(__dirname, '../portfolio/dist')));
-
-//     // All remaining requests return frontend
-//     app.get('*', (req, res) => {
-//         res.sendFile(path.join(__dirname, '../portfolio/dist/index.html'));
-//     });
-// }
-
+// Serve frontend build (optional, if single service)
+app.use(express.static(path.join(__dirname, '../portfolio/dist')));
+app.get('*', (req,res)=> {
+    res.sendFile(path.join(__dirname, '../portfolio/dist/index.html'));
+});
 
 // basic health
 app.get('/', (req, res) => res.json({ ok: true }));

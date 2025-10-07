@@ -1,5 +1,5 @@
 // controllers/authController.js
-const bcrypt = require("bcryptjs");
+const bcrypt = require ('bcrypt')
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/userModel"); // import mongoose User model

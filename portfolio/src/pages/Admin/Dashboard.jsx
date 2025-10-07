@@ -35,7 +35,7 @@ const Dashboard = () => {
                 </header>
 
                 {/* Profile Section */}
-                <div className="bg-gray-800 border border-gray-700 p-6 rounded-2xl mb-6 w-[40%]">
+                <div className="bg-gray-800 border border-gray-700 p-6 rounded-2xl mb-6 ">
                     <h2 className="text-2xl font-bold text-white mb-4">Profile Overview</h2>
                     <div className="flex items-center gap-6">
                         <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-3xl">

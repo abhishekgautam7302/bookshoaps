@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../component/common/Sidebar';
+import toast from 'react-hot-toast';
 
 const AddBooks = () => {
     const navigate = useNavigate();
@@ -112,23 +113,14 @@ const AddBooks = () => {
 
             // Axios wraps the response in data property
             if (response.data.success) {
-                alert('Book added successfully!');
+                toast.success('Book added successfully!');
                 navigate('/dashboard/student/books');
             } else {
-                setErrors({ submit: response.data.message || 'Failed to add book' });
+                toast.error({ submit: response.data.message || 'Failed to add book' });
             }
         } catch (error) {
-            console.error('Error adding book:', error);
-            if (error.response) {
-                // Server responded with error status
-                setErrors({ submit: error.response.data.message || 'Failed to add book' });
-            } else if (error.request) {
-                // Request was made but no response received
-                setErrors({ submit: 'Network error. Please try again.' });
-            } else {
-                // Something else happened
-                setErrors({ submit: 'An error occurred. Please try again.' });
-            }
+            toast.error('Error adding book:', error);
+           
         } finally {
             setLoading(false);
         }

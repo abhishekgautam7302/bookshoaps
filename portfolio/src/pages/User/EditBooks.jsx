@@ -3,10 +3,13 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../component/common/Sidebar';
+import { useAuth } from '../../context/auth';
+import toast from 'react-hot-toast';
 
 const EditBook = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [auth] = useAuth();
     const [formData, setFormData] = useState({
         title: '',
         author: '',
@@ -29,12 +32,15 @@ const EditBook = () => {
             setFetchLoading(true);
             const response = await axios.get(`/api/v1/books/get-books/${id}`, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth?.token}` // Add authorization header
                 },
             });
 
+            console.log(response)
+
             if (response.data.success) {
                 const book = response.data.book;
+                // Fixed: Use the correct image path format from your controller
                 setCurrentImage(book.image ? `http://localhost:4000${book.image}` : '');
                 setFormData({
                     title: book.title || '',
@@ -119,6 +125,12 @@ const EditBook = () => {
             newErrors.condition = 'Condition is required';
         }
 
+        // Validate condition values according to your controller
+        const validConditions = ["Like New", "Good", "Fair"];
+        if (formData.condition && !validConditions.includes(formData.condition)) {
+            newErrors.condition = 'Invalid condition. Allowed: Like New, Good, Fair';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -134,6 +146,7 @@ const EditBook = () => {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem('token'); // Get token from storage
             const submitData = new FormData();
             submitData.append('title', formData.title);
             submitData.append('author', formData.author);
@@ -147,22 +160,19 @@ const EditBook = () => {
             const response = await axios.put(`/api/v1/books/edit-books/${id}`, submitData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${auth.token}` // Add authorization header
                 },
             });
 
             if (response.data.success) {
-                alert('Book updated successfully!');
+                toast.success('Book updated successfully!');
                 navigate('/dashboard/student/books');
             } else {
-                setErrors({ submit: response.data.message || 'Failed to update book' });
+                toast.error({ submit: response.data.message || 'Failed to update book' });
             }
         } catch (error) {
-            console.error('Error updating book:', error);
-            if (error.response) {
-                setErrors({ submit: error.response.data.message || 'Failed to update book' });
-            } else {
-                setErrors({ submit: 'An error occurred. Please try again.' });
-            }
+            toast.error('Error updating book:', error);
+           
         } finally {
             setLoading(false);
         }

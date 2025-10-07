@@ -1,15 +1,13 @@
 // app.js
 const express = require('express');
 const cors = require('cors');
-const pool = require("./config/database");
+const Database = require('./config/database')
 const dotenv = require('dotenv');
 dotenv.config();
 const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
-// const reqRoutes = require('./routes/requests');
-
 
 
 const app = express();
@@ -20,14 +18,19 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/books', bookRoutes);
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../portfolio/dist')));
+Database.dbConnection();
 
-    // All remaining requests return frontend
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../portfolio/dist/index.html'));
-    });
-}
+
+
+// if (process.env.NODE_ENV === 'production') {
+//     app.use(express.static(path.join(__dirname, '../portfolio/dist')));
+
+//     // All remaining requests return frontend
+//     app.get('*', (req, res) => {
+//         res.sendFile(path.join(__dirname, '../portfolio/dist/index.html'));
+//     });
+// }
+
 
 // basic health
 app.get('/', (req, res) => res.json({ ok: true }));

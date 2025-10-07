@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../../component/common/Sidebar';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const BooksSection = () => {
     const navigate = useNavigate();
@@ -35,18 +36,18 @@ const BooksSection = () => {
             try {
                 const response = await axios.delete(`/api/v1/books/delete/${bookId}`);
                 if (response.data.success) {
-                    alert('Book deleted successfully!');
+                    toast.success('Book deleted successfully!');
                     // Remove book from local state
                     setBooks(books.filter(book => book.id !== bookId));
                 } else {
-                    alert('Failed to delete book: ' + response.data.message);
+                    toast.error('Failed to delete book: ' + response.data.message);
                 }
             } catch (error) {
                 console.error('Error deleting book:', error);
                 if (error.response) {
-                    alert('Failed to delete book: ' + error.response.data.message);
+                    toast.error('Failed to delete book: ' + error.response.data.message);
                 } else {
-                    alert('Network error. Please try again.');
+                    toast.error('Network error. Please try again.');
                 }
             }
         }
@@ -55,7 +56,7 @@ const BooksSection = () => {
     const handleEdit = (bookId) => {
         navigate(`/dashboard/student/edit-books/${bookId}`);
     };
-    const handleView=(bookid)=>{
+    const handleView = (bookid) => {
         navigate(`/dashboard/student/view-books/${bookid}`)
     }
 
@@ -115,7 +116,7 @@ const BooksSection = () => {
                         <h1 className="text-3xl font-bold text-white">Book Management</h1>
                         <p className="text-gray-400 mt-2">Manage your book submissions</p>
                     </div>
-                   
+
                 </header>
 
                 {error && (
@@ -163,7 +164,7 @@ const BooksSection = () => {
                                 ) : (
                                     books.map((book) => (
                                         <tr
-                                            key={book.id}
+                                            key={book._id}
                                             className="border-b border-gray-700 hover:bg-gray-750 transition-colors"
                                         >
                                             <td className="py-4 px-4">
@@ -189,15 +190,16 @@ const BooksSection = () => {
                                             </td>
 
                                             <td className="py-4 px-4 text-gray-300">
-                                                {new Date(book.created_at).toLocaleDateString()}
+                                                {new Date(book.createdAt).toLocaleDateString()}
                                             </td>
+
 
                                             <td className="py-4 px-4">
                                                 <div className="flex gap-3">
                                                     {/* Edit Icon - Only show if status is Pending */}
 
                                                     <button
-                                                        onClick={() => handleEdit(book.id)}
+                                                        onClick={() => handleEdit(book._id)}
                                                         className="text-blue-400 hover:text-blue-300 transition-colors"
                                                         title="Edit Book"
                                                     >
@@ -210,7 +212,7 @@ const BooksSection = () => {
                                                     {/* Delete Icon - Only show if status is Pending */}
 
                                                     <button
-                                                        onClick={() => handleDelete(book.id)}
+                                                        onClick={() => handleDelete(book._id)}
                                                         className="text-red-400 hover:text-red-300 transition-colors"
                                                         title="Delete Book"
                                                     >
@@ -220,7 +222,7 @@ const BooksSection = () => {
                                                     </button>
 
                                                     <button
-                                                        onClick={() => handleView(book.id)}
+                                                        onClick={() => handleView(book._id)}
                                                         className="text-red-400 hover:text-red-300 transition-colors"
                                                         title="Delete Book"
                                                     >

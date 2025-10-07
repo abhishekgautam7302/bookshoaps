@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 const SignUp = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [setAuth] = useAuth();
+     const [auth, setAuth] = useAuth();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -43,11 +43,12 @@ const SignUp = () => {
                 });
                 localStorage.setItem('auth', JSON.stringify(result.data));
 
+                // FIX: Redirect based on role and intended destination
                 const intendedPath = location.state?.from ||
                     (result.data.user.role === "Teacher" ? "/dashboard/Teacher" : "/dashboard/Student");
                 navigate(intendedPath, { replace: true });
             } else {
-                toast.error(result.data.message || 'Login failed. Please try again.');
+                toast.error(result.data.message || 'Sign up failed. Please try again.');
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong. Please try again.');

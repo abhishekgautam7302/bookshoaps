@@ -4,10 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminSidebar from '../../component/common/AdminSidebar';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/auth';
 
 const UpdateBook = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [auth]= useAuth();
     const [formData, setFormData] = useState({
         title: '',
         author: '',
@@ -70,13 +72,18 @@ const UpdateBook = () => {
         }
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
             const { message, status } = formData;
-            const response = await axios.put(`/api/v1/books/admin/status/${id}`, { message, status });
+            const response = await axios.put(`/api/v1/books/admin/status/${id}`, { message, status },{
+                 headers: {
+                    'Authorization': `Bearer ${auth.token}` // Add authorization header
+                },
+            });
             if (response.data.success) {
                 toast.success('Book updated successfully!');
                 navigate('/dashboard/teacher/books');

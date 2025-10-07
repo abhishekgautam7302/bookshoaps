@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth.jsx";
 import toast from "react-hot-toast";
 
@@ -48,7 +48,7 @@ const Navbar = () => {
                     </NavLink>
 
                     <NavLink
-                        to='/about'
+                        to='#'
                         className={({ isActive }) =>
                             `relative text-sm transition-all duration-300 group ${isActive
                                 ? 'text-cyan-300 scale-110'
@@ -63,7 +63,7 @@ const Navbar = () => {
                     </NavLink>
 
                     <NavLink
-                        to='/dashboardsss'
+                        to='#'
                         className={({ isActive }) =>
                             `relative text-sm transition-all duration-300 group ${isActive
                                 ? 'text-cyan-300 scale-110'
@@ -107,7 +107,7 @@ const Navbar = () => {
                         </NavLink>
                     </div>) : (
                     <div className="hidden md:flex items-center space-x-4">
-                        <NavLink to={`/dashboard/${auth.user.role === 'Teacher' ? 'teacher' : 'student'}`}>
+                        <NavLink to={`/dashboard/${auth?.user?.role === 'Teacher' ? 'teacher' : 'student'}`}>
                             <button className="px-6 py-2 rounded-2xl bg-white/10 border border-white/15 text-white font-semibold hover:bg-white/15 hover:border-white/25 transform hover:scale-105 transition-all duration-300 backdrop-blur-lg text-sm"
                             >
                                 Dashboard
@@ -152,7 +152,7 @@ const Navbar = () => {
                             </NavLink>
 
                             <NavLink
-                                to='/about'
+                                to='#'
                                 onClick={() => setIsMenuOpen(false)}
                                 className={({ isActive }) =>
                                     `py-3 px-4 rounded-xl transition-all duration-300 text-center ${isActive
@@ -165,7 +165,7 @@ const Navbar = () => {
                             </NavLink>
 
                             <NavLink
-                                to='/services'
+                                to='#'
                                 onClick={() => setIsMenuOpen(false)}
                                 className={({ isActive }) =>
                                     `py-3 px-4 rounded-xl transition-all duration-300 text-center ${isActive
@@ -178,7 +178,7 @@ const Navbar = () => {
                             </NavLink>
 
                             <NavLink
-                                to='/contact'
+                                to='#'
                                 onClick={() => setIsMenuOpen(false)}
                                 className={({ isActive }) =>
                                     `py-3 px-4 rounded-xl transition-all duration-300 text-center ${isActive
@@ -192,7 +192,7 @@ const Navbar = () => {
 
 
                             {/* Mobile Auth Buttons */}
-                            <div className="flex flex-col space-y-3 pt-4 border-t border-white/10">
+                            {!auth?.token ? (<div className="flex flex-col space-y-3 pt-4 border-t border-white/10">
                                 <NavLink to='/login' onClick={() => setIsMenuOpen(false)}>
                                     <button className="w-full py-3 rounded-xl bg-white/10 border border-white/15 text-white font-semibold hover:bg-white/15 hover:border-white/25 transition-all duration-300">
                                         Login
@@ -204,7 +204,20 @@ const Navbar = () => {
                                         Sign Up
                                     </button>
                                 </NavLink>
-                            </div>
+                            </div>) : (<div className="flex flex-col space-y-3 pt-4 border-t border-white/10">
+                                <NavLink to={`/dashboard/${auth?.user?.role === 'Teacher' ? 'teacher':'student'}`} onClick={() => setIsMenuOpen(false)}>
+                                    <button className="w-full py-3 rounded-xl bg-white/10 border border-white/15 text-white font-semibold hover:bg-white/15 hover:border-white/25 transition-all duration-300">
+                                        Dashboard
+                                    </button>
+                                </NavLink>
+
+                                <NavLink  onClick={() => setIsMenuOpen(false)}>
+                                    <button className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold hover:shadow-xl transition-all duration-300 border border-white/20"
+                                      onClick={handleLogout}>
+                                        Logout
+                                    </button>
+                                </NavLink>
+                            </div>)}
                         </div>
                     </div>
                 )

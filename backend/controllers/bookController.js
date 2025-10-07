@@ -1,6 +1,5 @@
-// controllers/bookController.js
-const pool = require("../config/database");
-
+const Book = require("../models/booksModel");
+const User = require("../models/userModel");
 
 // ================== CREATE BOOK ==================
 const createBook = async (req, res) => {
@@ -15,7 +14,7 @@ const createBook = async (req, res) => {
             });
         }
 
-        // Validate condition against ENUM
+        // Validate condition
         const validConditions = ["Like New", "Good", "Fair"];
         if (!validConditions.includes(condition)) {
             return res.status(400).json({
@@ -27,26 +26,22 @@ const createBook = async (req, res) => {
         // Handle image upload
         const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-        // Insert book into DB with default status 'pending' and null message
-        const [result] = await pool.query(
-            `INSERT INTO books (user_id, title, author, \`condition\`, image, description, status, message) 
-       VALUES (?, ?, ?, ?, ?, ?, 'pending', NULL)`,
-            [req.user.id, title, author, condition, image, description || null]
-        );
+        // Create book
+        const book = await Book.create({
+            user: req.user.id,
+            title,
+            author,
+            condition,
+            image,
+            description: description || null,
+            status: "pending",
+            message: null,
+        });
 
         res.status(201).json({
             success: true,
             message: "Book added successfully",
-            book: {
-                id: result.insertId,
-                title,
-                author,
-                condition,
-                image,
-                description: description || null,
-                status: 'pending', // Default status
-                message: null // Default null message
-            },
+            book,
         });
     } catch (err) {
         console.error("CreateBook Error:", err);
@@ -54,22 +49,17 @@ const createBook = async (req, res) => {
     }
 };
 
-
-
 // ================== GET ALL BOOKS ==================
 const getAllBooks = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            `SELECT b.*, u.name AS owner_name, u.email AS owner_email
-       FROM books b 
-       JOIN users u ON b.user_id = u.id
-       ORDER BY b.created_at DESC`
-        );
+        const books = await Book.find()
+            .populate("user", "name email")
+            .sort({ createdAt: -1 });
 
         res.json({
             success: true,
-            count: rows.length,
-            books: rows,
+            count: books.length,
+            books,
         });
     } catch (err) {
         console.error("GetAllBooks Error:", err);
@@ -80,17 +70,12 @@ const getAllBooks = async (req, res) => {
 // ================== GET MY BOOKS ==================
 const getMyBooks = async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            `SELECT * FROM books 
-       WHERE user_id = ? 
-       ORDER BY created_at DESC`,
-            [req.user.id]
-        );
+        const books = await Book.find({ user: req.user.id }).sort({ createdAt: -1 });
 
         res.json({
             success: true,
-            count: rows.length,
-            books: rows,
+            count: books.length,
+            books,
         });
     } catch (err) {
         console.error("GetMyBooks Error:", err);
@@ -98,22 +83,14 @@ const getMyBooks = async (req, res) => {
     }
 };
 
-
-
 // ================== GET BOOK BY ID ==================
 const getBookById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [rows] = await pool.query(
-            `SELECT b.*, u.name AS owner_name, u.email AS owner_email
-       FROM books b 
-       JOIN users u ON b.user_id = u.id
-       WHERE b.id = ?`,
-            [id]
-        );
+        const book = await Book.findById(id).populate("user", "name email");
 
-        if (!rows.length) {
+        if (!book) {
             return res.status(404).json({
                 success: false,
                 message: "Book not found",
@@ -122,7 +99,7 @@ const getBookById = async (req, res) => {
 
         res.json({
             success: true,
-            book: rows[0],
+            book,
         });
     } catch (err) {
         console.error("GetBookById Error:", err);
@@ -130,20 +107,14 @@ const getBookById = async (req, res) => {
     }
 };
 
-
+// ================== ADMIN GET BOOK BY ID ==================
 const AdmingetBookById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [rows] = await pool.query(
-            `SELECT b.*, u.name AS owner_name, u.email AS owner_email
-       FROM books b 
-       JOIN users u ON b.user_id = u.id
-       WHERE b.id = ?`,
-            [id]
-        );
+        const book = await Book.findById(id).populate("user", "name email");
 
-        if (!rows.length) {
+        if (!book) {
             return res.status(404).json({
                 success: false,
                 message: "Book not found",
@@ -152,10 +123,10 @@ const AdmingetBookById = async (req, res) => {
 
         res.json({
             success: true,
-            book: rows[0],
+            book,
         });
     } catch (err) {
-        console.error("GetBookById Error:", err);
+        console.error("AdmingetBookById Error:", err);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
@@ -174,7 +145,6 @@ const updateBook = async (req, res) => {
             });
         }
 
-        // Validate condition against ENUM
         const validConditions = ["Like New", "Good", "Fair"];
         if (!validConditions.includes(condition)) {
             return res.status(400).json({
@@ -183,30 +153,25 @@ const updateBook = async (req, res) => {
             });
         }
 
-        // Handle image upload
         const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
-        // Build update query
-        let updateQuery = `UPDATE books SET title = ?, author = ?, \`condition\` = ?, description = ?`;
-        let queryParams = [title, author, condition, description || null];
+        // Find and update (owned only)
+        const book = await Book.findOne({ _id: id, user: req.user.id });
 
-        // Add image to update if provided
-        if (image) {
-            updateQuery += `, image = ?`;
-            queryParams.push(image);
-        }
-
-        updateQuery += ` WHERE id = ?`;
-        queryParams.push(id);
-
-        const [result] = await pool.query(updateQuery, queryParams);
-
-        if (result.affectedRows === 0) {
+        if (!book) {
             return res.status(404).json({
                 success: false,
-                message: "Book not found",
+                message: "Book not found or not owned by you",
             });
         }
+
+        book.title = title;
+        book.author = author;
+        book.condition = condition;
+        book.description = description || null;
+        if (image) book.image = image;
+
+        await book.save();
 
         res.json({
             success: true,
@@ -218,49 +183,39 @@ const updateBook = async (req, res) => {
     }
 };
 
-
-// ================== UPDATE BOOK ==================
+// ================== ADMIN UPDATE BOOK ==================
 const AdminUpdateBook = async (req, res) => {
-
     try {
         const { id } = req.params;
-        const { title, author, condition, description ,message,status } = req.body;
+        const { message, status } = req.body;
 
-        // Validate required fields
-        if (!message|| !status) {
+        if (!message || !status) {
             return res.status(400).json({
                 success: false,
-                message: "message and status  are required",
+                message: "Message and Status are required",
             });
         }
 
-        // Handle image upload
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const book = await Book.findById({_id:id});
 
-        // Build update query
-        let updateQuery = `UPDATE books SET status = ?, message = ?`;
-        let queryParams = [status,message || null];
-
-  
-
-        updateQuery += ` WHERE id = ?`;
-        queryParams.push(id);
-
-        const [result] = await pool.query(updateQuery, queryParams);
-
-        if (result.affectedRows === 0) {
+        if (!book) {
             return res.status(404).json({
                 success: false,
                 message: "Book not found",
             });
         }
 
+        book.status = status;
+        book.message = message;
+
+        await book.save();
+
         res.json({
             success: true,
             message: "Book updated successfully",
         });
     } catch (err) {
-        console.error("UpdateBook Error:", err);
+        console.error("AdminUpdateBook Error:", err);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
@@ -270,21 +225,16 @@ const deleteBook = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check ownership
-        const [rows] = await pool.query(
-            `SELECT * FROM books WHERE id = ? AND user_id = ?`,
-            [id, req.user.id]
-        );
+        const book = await Book.findOne({ _id: id, user: req.user.id });
 
-        if (!rows.length) {
+        if (!book) {
             return res.status(403).json({
                 success: false,
                 message: "Not allowed. Book not found or not owned by you.",
             });
         }
 
-        // Delete book
-        await pool.query(`DELETE FROM books WHERE id = ?`, [id]);
+        await Book.findByIdAndDelete(id);
 
         res.json({
             success: true,
@@ -296,6 +246,13 @@ const deleteBook = async (req, res) => {
     }
 };
 
-
-
-module.exports = { createBook, getAllBooks, getMyBooks, deleteBook, updateBook, getBookById,AdminUpdateBook,AdmingetBookById  };
+module.exports = {
+    createBook,
+    getAllBooks,
+    getMyBooks,
+    getBookById,
+    AdmingetBookById,
+    updateBook,
+    AdminUpdateBook,
+    deleteBook,
+};

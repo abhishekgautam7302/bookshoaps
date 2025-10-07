@@ -1,7 +1,6 @@
 // App.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Sidebar from '../../component/common/Sidebar';
 import axios from 'axios';
 import AdminSidebar from '../../component/common/AdminSidebar';
 
@@ -138,7 +137,7 @@ const AdminBookSection = () => {
                                 ) : (
                                     books.map((book) => (
                                         <tr
-                                            key={book.id}
+                                            key={book._id}
                                             className="border-b border-gray-700 hover:bg-gray-750 transition-colors"
                                         >
                                             <td className="py-4 px-4">
@@ -163,12 +162,11 @@ const AdminBookSection = () => {
                                                 </span>
                                             </td>
 
-                                            <td className="py-4 px-4 text-gray-300">
-                                                {new Date(book.created_at).toLocaleDateString()}
+                                           <td className="py-4 px-4 text-gray-300">
+                                                {new Date(book.createdAt).toLocaleDateString()}
                                             </td>
-
                                             <td className="py-4 px-4 text-gray-300">
-                                                {(book.owner_name)}
+                                                {(book?.user.name)}
                                             </td>
 
                                             <td className="py-4 px-4">
@@ -176,7 +174,7 @@ const AdminBookSection = () => {
                                                     {/* Edit Icon - Only show if status is Pending */}
                                                     
                                                         <button 
-                                                            onClick={() => handleEdit(book.id)}
+                                                            onClick={() => handleEdit(book._id)}
                                                             className="text-blue-400 hover:text-blue-300 transition-colors"
                                                             title="Edit Book"
                                                         >

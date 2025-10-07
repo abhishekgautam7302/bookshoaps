@@ -1,17 +1,3 @@
-# Node modules (backend & frontend)
 node_modules/
-backend/node_modules/
-portfolio/node_modules/
-
-# Build files
-portfolio/build/
-backend/build/
-
-# Environment files
-portfolio/dist
 .env
-backend/.env
-portfolio/.env
 
-# System files
-.DS_Store

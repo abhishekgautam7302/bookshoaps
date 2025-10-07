@@ -1,4 +1,4 @@
-// app.js
+// server.js
 const express = require('express');
 const cors = require('cors');
 const Database = require('./config/database')
@@ -10,7 +10,15 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 
 const app = express();
-app.use(cors());
+
+// CORS - Render URL allow karo
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://your-app-name.onrender.com'] 
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -22,23 +30,27 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/books', bookRoutes);
 
 // Basic health check
-app.get('/', (req, res) => res.json({ ok: true }));
+app.get('/', (req, res) => res.json({ 
+  ok: true, 
+  message: 'Assignment Book API is running',
+  timestamp: new Date().toISOString()
+}));
 
 // Serve frontend SPA with fallback
 app.use(express.static(path.join(__dirname, '../portfolio/dist'), {
-  index: false // Don't serve index.html for directories
+  index: false
 }));
 
-// SPA fallback - use a different approach
+// SPA fallback - working approach
 app.use((req, res, next) => {
-  // If it's an API route that doesn't exist
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  
-  // For all other non-API routes, serve the SPA
   res.sendFile(path.join(__dirname, '../portfolio/dist/index.html'));
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Backend running on ${port}`));
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+});

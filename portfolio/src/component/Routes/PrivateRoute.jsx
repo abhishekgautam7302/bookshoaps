@@ -6,6 +6,7 @@ import axios from "axios";
 import Spinner from "../Spinner";
 import toast from "react-hot-toast";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 export default function PrivateRoute() {
   const [ok, setOk] = useState(null);
   const [auth, setAuth] = useAuth();
@@ -27,7 +28,7 @@ export default function PrivateRoute() {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
         // Then try the actual auth check
-        const res = await axios.get("/api/v1/auth/user-auth");
+        const res = await axios.get(`${BASE_URL}/api/v1/auth/user-auth`);
         
         if (res.data.ok) {
           setOk(true);

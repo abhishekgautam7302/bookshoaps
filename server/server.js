@@ -13,10 +13,8 @@ const app = express();
 
 // CORS - Render URL allow karo
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-app-name.onrender.com'] 
-    : ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  origin: ['http://localhost:5173', 'https://bookswapps.netlify.app/'], // frontend URLs allowed
+  credentials: true, // agar cookies/auth use kar rahe ho
 }));
 
 app.use(express.json());

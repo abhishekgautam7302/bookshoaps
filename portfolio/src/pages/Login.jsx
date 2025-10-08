@@ -5,30 +5,36 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 
+
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [auth, setAuth] = useAuth();
-    const [formData,setFormData] = useState({
-        email:"",
-        password:""
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
     })
 
-       const handleChange = (e) => {
+    const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
     };
 
-    const {email,password} = formData;
-    
+    const { email, password } = formData;
+  
+
+    console.log(BASE_URL)
+
+
 
     // FIX: Get intended destination or default dashboard based on role
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const result = await axios.post('/api/v1/auth/login', { email, password });
+            const result = await axios.post(`${BASE_URL}/api/v1/auth/login`, { email, password });
 
             if (result.data.success) {
                 toast.success(result.data.message);

@@ -14,7 +14,7 @@ const app = express();
 // CORS - Render URL allow karo
 
 app.use(cors({
-    origin: 'https://bookshoaps-1waffb1yv-abhishek-gautams-projects-c7c4227f.vercel.app/',
+    origin: 'https://bookshoaps.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // if you are sending cookies or auth headers
 }));

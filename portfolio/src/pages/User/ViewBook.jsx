@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../../component/common/Sidebar";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const ViewBook = () => {
     const { id } = useParams();
     const navigate = useNavigate();

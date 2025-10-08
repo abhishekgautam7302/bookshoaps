@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AdminSidebar from '../../component/common/AdminSidebar';
 
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AdminBookSection = () => {
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
@@ -14,7 +16,7 @@ const AdminBookSection = () => {
     const fetchBooks = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/v1/books/get-all-books');
+            const response = await axios.get(`${BASE_URL}/api/v1/books/get-all-books`);
             if (response.data.success) {
                 setBooks(response.data.books);
             }

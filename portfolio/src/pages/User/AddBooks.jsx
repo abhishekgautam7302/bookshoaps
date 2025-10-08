@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../component/common/Sidebar';
 import toast from 'react-hot-toast';
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const AddBooks = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -103,7 +105,7 @@ const AddBooks = () => {
             }
 
             // IMPORTANT: Send FormData directly, not wrapped in an object
-            const response = await axios.post('/api/v1/books/add-books', submitData, {
+            const response = await axios.post(`${BASE_URL}/api/v1/books/add-books`, submitData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

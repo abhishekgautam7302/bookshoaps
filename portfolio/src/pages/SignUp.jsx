@@ -3,6 +3,7 @@ import {useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../context/auth.jsx';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const SignUp = () => {
         }
 
         try {
-            const result = await axios.post('/api/v1/auth/signup', { name, email, password });
+            const result = await axios.post(`${BASE_URL}/api/v1/auth/signup`, { name, email, password });
 
             if (result.data.success) {
                 toast.success(result.data.message);

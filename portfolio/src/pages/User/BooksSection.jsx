@@ -5,6 +5,8 @@ import Sidebar from '../../component/common/Sidebar';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const BooksSection = () => {
     const navigate = useNavigate();
     const [books, setBooks] = useState([]);
@@ -15,7 +17,7 @@ const BooksSection = () => {
     const fetchBooks = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/v1/books/my-books');
+            const response = await axios.get(`${BASE_URL}/api/v1/books/my-books`);
             if (response.data.success) {
                 setBooks(response.data.books);
             }
@@ -34,7 +36,7 @@ const BooksSection = () => {
     const handleDelete = async (bookId) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
             try {
-                const response = await axios.delete(`/api/v1/books/delete/${bookId}`);
+                const response = await axios.delete(`${BASE_URL}/api/v1/books/delete/${bookId}`);
                 if (response.data.success) {
                     toast.success('Book deleted successfully!');
                     // Remove book from local state

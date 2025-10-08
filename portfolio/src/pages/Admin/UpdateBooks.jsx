@@ -6,6 +6,7 @@ import AdminSidebar from '../../component/common/AdminSidebar';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/auth';
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const UpdateBook = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -30,7 +31,7 @@ const UpdateBook = () => {
     const fetchBookData = async () => {
         try {
             setFetchLoading(true);
-            const response = await axios.post(`/api/v1/books/admin/get-books/${id}`, {
+            const response = await axios.post(`${BASE_URL}/api/v1/books/admin/get-books/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -79,7 +80,7 @@ const UpdateBook = () => {
 
         try {
             const { message, status } = formData;
-            const response = await axios.put(`/api/v1/books/admin/status/${id}`, { message, status },{
+            const response = await axios.put(`${BASE_URL}/api/v1/books/admin/status/${id}`, { message, status },{
                  headers: {
                     'Authorization': `Bearer ${auth.token}` // Add authorization header
                 },

@@ -6,6 +6,8 @@ import Sidebar from '../../component/common/Sidebar';
 import { useAuth } from '../../context/auth';
 import toast from 'react-hot-toast';
 
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const EditBook = () => {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -30,7 +32,7 @@ const EditBook = () => {
     const fetchBookData = async () => {
         try {
             setFetchLoading(true);
-            const response = await axios.get(`/api/v1/books/get-books/${id}`, {
+            const response = await axios.get(`${BASE_URL}/api/v1/books/get-books/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${auth?.token}` // Add authorization header
                 },
@@ -157,7 +159,7 @@ const EditBook = () => {
                 submitData.append('image', newImage);
             }
 
-            const response = await axios.put(`/api/v1/books/edit-books/${id}`, submitData, {
+            const response = await axios.put(`${BASE_URL}/api/v1/books/edit-books/${id}`, submitData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${auth.token}` // Add authorization header

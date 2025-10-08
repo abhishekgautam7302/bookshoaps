@@ -13,7 +13,7 @@ const app = express();
 
 // CORS - Render URL allow karo
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://bookswapps.netlify.appgfg'], // frontend URLs allowed
+  origin: ['http://localhost:5173', 'https://bookswapps.netlify.app'], // frontend URLs allowed
   credentials: true, // agar cookies/auth use kar rahe ho
 }));
 

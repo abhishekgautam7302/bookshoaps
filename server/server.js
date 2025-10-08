@@ -12,11 +12,13 @@ const bookRoutes = require('./routes/books');
 const app = express();
 
 // CORS - Render URL allow karo
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://bookswapps.netlify.app'],
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'], 
-  credentials: true, // agar cookies/auth use kar rahe ho
-}));
+
+app.use(cors());
+// app.use(cors({
+//   origin: ['http://localhost:5173', 'https://bookswapps.netlify.app'],
+//   methods: ['GET','POST','PUT','DELETE','OPTIONS'], 
+//   credentials: true, // agar cookies/auth use kar rahe ho
+// }));
 
 
 app.use(express.json());

@@ -37,7 +37,7 @@ const UpdateBook = () => {
             });
             if (response.data.success) {
                 const book = response.data.book;
-                setCurrentImage(book.image ? `http://localhost:4000${book.image}` : '');
+                setCurrentImage(book.image ? `https://bookshoaps-3.onrender.com${book.image}` : '');
                 setFormData({
                     title: book.title || '',
                     author: book.author || '',

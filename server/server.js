@@ -13,7 +13,12 @@ const app = express();
 
 // CORS - Render URL allow karo
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://bookswappss.netlify.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // if you are sending cookies or auth headers
+}));
+
 // app.use(cors({
 //   origin: ['http://localhost:5173', 'https://bookswapps.netlify.app'],
 //   methods: ['GET','POST','PUT','DELETE','OPTIONS'], 

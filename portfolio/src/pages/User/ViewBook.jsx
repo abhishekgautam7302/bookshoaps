@@ -20,7 +20,7 @@ const ViewBook = () => {
     const fetchBookData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`/api/v1/books/get-books/${id}`, {
+            const response = await axios.get(`${BASE_URL}/api/v1/books/get-books/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

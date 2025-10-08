@@ -24,10 +24,6 @@ const Login = () => {
     };
 
     const { email, password } = formData;
-  
-
-    console.log(BASE_URL)
-
 
 
     // FIX: Get intended destination or default dashboard based on role

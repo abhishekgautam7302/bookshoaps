@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 
 
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
